@@ -8,7 +8,7 @@ import { BlockSchema } from "../Blocks/api/blockTypes";
  * (Not to be confused with ProseMirror commands nor TipTap commands.)
  */
 export class BaseSlashMenuItem<
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<any>,
 > extends SuggestionItem {
   /**
    * Constructs a new slash-command.

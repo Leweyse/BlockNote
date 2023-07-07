@@ -6,7 +6,7 @@ import { BaseSlashMenuItem } from "./BaseSlashMenuItem";
 import { BlockNoteEditor } from "../../BlockNoteEditor";
 import { BlockSchema } from "../Blocks/api/blockTypes";
 
-export type SlashMenuOptions<BSchema extends BlockSchema> = {
+export type SlashMenuOptions<BSchema extends BlockSchema<PSchema>, PSchema> = {
   editor: BlockNoteEditor<BSchema> | undefined;
   commands: BaseSlashMenuItem<BSchema>[] | undefined;
   slashMenuFactory: SuggestionsMenuFactory<any> | undefined;
@@ -14,8 +14,8 @@ export type SlashMenuOptions<BSchema extends BlockSchema> = {
 
 export const SlashMenuPluginKey = new PluginKey("suggestions-slash-commands");
 
-export const createSlashMenuExtension = <BSchema extends BlockSchema>() =>
-  Extension.create<SlashMenuOptions<BSchema>>({
+export const createSlashMenuExtension = <BSchema extends BlockSchema<PSchema>, PSchema>() =>
+  Extension.create<SlashMenuOptions<BSchema, PSchema>>({
     name: "slash-command",
 
     addOptions() {

@@ -8,8 +8,8 @@ import {
 import { blockToNode } from "../nodeConversions/nodeConversions";
 import { getNodeById } from "../util/nodeUtil";
 
-export function insertBlocks<BSchema extends BlockSchema>(
-  blocksToInsert: PartialBlock<BSchema>[],
+export function insertBlocks<BSchema extends BlockSchema<PSchema>, PSchema>(
+  blocksToInsert: PartialBlock<BSchema, PSchema>[],
   referenceBlock: BlockIdentifier,
   placement: "before" | "after" | "nested" = "before",
   editor: Editor
@@ -57,9 +57,9 @@ export function insertBlocks<BSchema extends BlockSchema>(
   editor.view.dispatch(editor.state.tr.insert(insertionPos, nodesToInsert));
 }
 
-export function updateBlock<BSchema extends BlockSchema>(
+export function updateBlock<BSchema extends BlockSchema<PSchema>, PSchema>(
   blockToUpdate: BlockIdentifier,
-  update: PartialBlock<BSchema>,
+  update: PartialBlock<BSchema, PSchema>,
   editor: Editor
 ) {
   const id =
@@ -116,9 +116,9 @@ export function removeBlocks(
   }
 }
 
-export function replaceBlocks<BSchema extends BlockSchema>(
+export function replaceBlocks< BSchema extends BlockSchema<PSchema>, PSchema>(
   blocksToRemove: BlockIdentifier[],
-  blocksToInsert: PartialBlock<BSchema>[],
+  blocksToInsert: PartialBlock<BSchema, PSchema>[],
   editor: Editor
 ) {
   insertBlocks(blocksToInsert, blocksToRemove[0], "before", editor);

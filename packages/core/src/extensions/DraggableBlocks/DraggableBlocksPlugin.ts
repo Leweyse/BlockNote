@@ -224,15 +224,15 @@ function dragStart(e: DragEvent, view: EditorView) {
   }
 }
 
-export type BlockMenuViewProps<BSchema extends BlockSchema> = {
+export type BlockMenuViewProps<BSchema extends BlockSchema<PSchema>, PSchema> = {
   tiptapEditor: Editor;
-  editor: BlockNoteEditor<BSchema>;
-  blockMenuFactory: BlockSideMenuFactory<BSchema>;
+  editor: BlockNoteEditor<PSchema, BSchema>;
+  blockMenuFactory: BlockSideMenuFactory<BSchema, PSchema>;
   horizontalPosAnchoredAtRoot: boolean;
 };
 
-export class BlockMenuView<BSchema extends BlockSchema> {
-  editor: BlockNoteEditor<BSchema>;
+export class BlockMenuView<BSchema extends BlockSchema<PSchema>, PSchema> {
+  editor: BlockNoteEditor<PSchema, BSchema>;
   private ttEditor: Editor;
 
   // When true, the drag handle with be anchored at the same level as root elements
@@ -241,7 +241,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
 
   horizontalPosAnchor: number;
 
-  blockMenu: BlockSideMenu<BSchema>;
+  blockMenu: BlockSideMenu<BSchema, PSchema>;
 
   hoveredBlock: HTMLElement | undefined;
 
@@ -257,7 +257,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     editor,
     blockMenuFactory,
     horizontalPosAnchoredAtRoot,
-  }: BlockMenuViewProps<BSchema>) {
+  }: BlockMenuViewProps<BSchema, PSchema>) {
     this.editor = editor;
     this.ttEditor = tiptapEditor;
     this.horizontalPosAnchoredAtRoot = horizontalPosAnchoredAtRoot;
@@ -524,7 +524,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     );
   }
 
-  getStaticParams(): BlockSideMenuStaticParams<BSchema> {
+  getStaticParams(): BlockSideMenuStaticParams<BSchema, PSchema> {
     return {
       editor: this.editor,
       addBlock: () => this.addBlock(),
@@ -563,15 +563,15 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     };
   }
 
-  getDynamicParams(): BlockSideMenuDynamicParams<BSchema> {
+  getDynamicParams(): BlockSideMenuDynamicParams<BSchema, PSchema> {
     return {
       block: this.editor.getBlock(this.hoveredBlock!.getAttribute("data-id")!)!,
     };
   }
 }
 
-export const createDraggableBlocksPlugin = <BSchema extends BlockSchema>(
-  options: DraggableBlocksOptions<BSchema>
+export const createDraggableBlocksPlugin = <BSchema extends BlockSchema<PSchema>, PSchema>(
+  options: DraggableBlocksOptions<BSchema, PSchema>
 ) => {
   return new Plugin({
     key: new PluginKey("DraggableBlocksPlugin"),

@@ -15,20 +15,20 @@ import {
 
 // Same as TipTap bubblemenu plugin, but with these changes:
 // https://github.com/ueberdosis/tiptap/pull/2596/files
-export interface FormattingToolbarPluginProps<BSchema extends BlockSchema> {
+export interface FormattingToolbarPluginProps<BSchema extends BlockSchema<PSchema>, PSchema> {
   pluginKey: PluginKey;
   tiptapEditor: Editor;
-  editor: BlockNoteEditor<BSchema>;
-  formattingToolbarFactory: FormattingToolbarFactory<BSchema>;
+  editor: BlockNoteEditor<PSchema, BSchema>;
+  formattingToolbarFactory: FormattingToolbarFactory<BSchema, PSchema>;
 }
 
-export type FormattingToolbarViewProps<BSchema extends BlockSchema> =
-  FormattingToolbarPluginProps<BSchema> & {
+export type FormattingToolbarViewProps<BSchema extends BlockSchema<PSchema>, PSchema> =
+  FormattingToolbarPluginProps<BSchema, PSchema> & {
     view: EditorView;
   };
 
-export class FormattingToolbarView<BSchema extends BlockSchema> {
-  public editor: BlockNoteEditor<BSchema>;
+export class FormattingToolbarView<BSchema extends BlockSchema<PSchema>, PSchema> {
+  public editor: BlockNoteEditor<PSchema, BSchema>;
   private ttEditor: Editor;
 
   public view: EditorView;
@@ -68,7 +68,7 @@ export class FormattingToolbarView<BSchema extends BlockSchema> {
     tiptapEditor,
     formattingToolbarFactory,
     view,
-  }: FormattingToolbarViewProps<BSchema>) {
+  }: FormattingToolbarViewProps<BSchema, PSchema>) {
     this.editor = editor;
     this.ttEditor = tiptapEditor;
     this.view = view;
@@ -221,7 +221,7 @@ export class FormattingToolbarView<BSchema extends BlockSchema> {
     return posToDOMRect(this.ttEditor.view, from, to);
   }
 
-  getStaticParams(): FormattingToolbarStaticParams<BSchema> {
+  getStaticParams(): FormattingToolbarStaticParams<BSchema, PSchema> {
     return {
       editor: this.editor,
       getReferenceRect: () => {
@@ -244,8 +244,8 @@ export class FormattingToolbarView<BSchema extends BlockSchema> {
   }
 }
 
-export const createFormattingToolbarPlugin = <BSchema extends BlockSchema>(
-  options: FormattingToolbarPluginProps<BSchema>
+export const createFormattingToolbarPlugin = <BSchema extends BlockSchema<PSchema>, PSchema>(
+  options: FormattingToolbarPluginProps<BSchema, PSchema>
 ) => {
   return new Plugin({
     key: new PluginKey("FormattingToolbarPlugin"),

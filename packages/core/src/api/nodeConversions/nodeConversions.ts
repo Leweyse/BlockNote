@@ -130,8 +130,8 @@ export function inlineContentToNodes(
 /**
  * Converts a BlockNote block to a TipTap node.
  */
-export function blockToNode<BSchema extends BlockSchema>(
-  block: PartialBlock<BSchema>,
+export function blockToNode<BSchema extends BlockSchema<PSchema>, PSchema>(
+  block: PartialBlock<BSchema, PSchema>,
   schema: Schema
 ) {
   let id = block.id;
@@ -350,11 +350,11 @@ function contentNodeToInlineContent(contentNode: Node) {
 /**
  * Convert a TipTap node to a BlockNote block.
  */
-export function nodeToBlock<BSchema extends BlockSchema>(
+export function nodeToBlock<BSchema extends BlockSchema<PSchema>, PSchema>(
   node: Node,
   blockSchema: BSchema,
-  blockCache?: WeakMap<Node, Block<BSchema>>
-): Block<BSchema> {
+  blockCache?: WeakMap<Node, Block<BSchema, PSchema>>
+): Block<BSchema, PSchema> {
   if (node.type.name !== "blockContainer") {
     throw Error(
       "Node must be of type blockContainer, but is of type" +
@@ -411,14 +411,14 @@ export function nodeToBlock<BSchema extends BlockSchema>(
 
   const content = contentNodeToInlineContent(blockInfo.contentNode);
 
-  const children: Block<BSchema>[] = [];
+  const children: Block<BSchema, PSchema>[] = [];
   for (let i = 0; i < blockInfo.numChildBlocks; i++) {
     children.push(
       nodeToBlock(blockInfo.node.lastChild!.child(i), blockSchema, blockCache)
     );
   }
 
-  const block: Block<BSchema> = {
+  const block: Block<BSchema, PSchema> = {
     id,
     type: blockInfo.contentType.name,
     props,

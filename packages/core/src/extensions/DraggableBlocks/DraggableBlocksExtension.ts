@@ -4,10 +4,10 @@ import { createDraggableBlocksPlugin } from "./DraggableBlocksPlugin";
 import { BlockNoteEditor } from "../../BlockNoteEditor";
 import { BlockSchema } from "../Blocks/api/blockTypes";
 
-export type DraggableBlocksOptions<BSchema extends BlockSchema> = {
+export type DraggableBlocksOptions<BSchema extends BlockSchema<PSchema>, PSchema> = {
   tiptapEditor: Editor;
-  editor: BlockNoteEditor<BSchema>;
-  blockSideMenuFactory: BlockSideMenuFactory<BSchema>;
+  editor: BlockNoteEditor<PSchema, BSchema>;
+  blockSideMenuFactory: BlockSideMenuFactory<BSchema, PSchema>;
 };
 
 /**
@@ -16,8 +16,8 @@ export type DraggableBlocksOptions<BSchema extends BlockSchema> = {
  *
  * code based on https://github.com/ueberdosis/tiptap/issues/323#issuecomment-506637799
  */
-export const createDraggableBlocksExtension = <BSchema extends BlockSchema>() =>
-  Extension.create<DraggableBlocksOptions<BSchema>>({
+export const createDraggableBlocksExtension = <BSchema extends BlockSchema<PSchema>, PSchema>() =>
+  Extension.create<DraggableBlocksOptions<BSchema, PSchema>>({
     name: "DraggableBlocksExtension",
     priority: 1000, // Need to be high, in order to hide menu when typing slash
     addProseMirrorPlugins() {

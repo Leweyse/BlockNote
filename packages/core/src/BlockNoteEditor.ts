@@ -42,7 +42,7 @@ import {
   defaultSlashMenuItems,
 } from "./extensions/SlashMenu";
 
-export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
+export type BlockNoteEditorOptions<BSchema extends BlockSchema<any> = DefaultBlockSchema> = {
   // TODO: Figure out if enableBlockNoteExtensions/disableHistoryExtension are needed and document them.
   enableBlockNoteExtensions: boolean;
 
@@ -50,7 +50,7 @@ export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
    * UI element factories for creating a custom UI, including custom positioning
    * & rendering.
    */
-  uiFactories: UiFactories<BSchema>;
+  uiFactories: UiFactories<BSchema, any>;
   /**
    * TODO: why is this called slashCommands and not slashMenuItems?
    *
@@ -58,7 +58,7 @@ export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
    *
    * @default defaultSlashMenuItems from `./extensions/SlashMenu`
    */
-  slashCommands: BaseSlashMenuItem<any>[];
+  slashCommands: BaseSlashMenuItem<BSchema>[];
 
   /**
    * The HTML element that should be used as the parent element for the editor.
@@ -91,7 +91,7 @@ export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
   /**
    * The content that should be in the editor when it's created, represented as an array of partial block objects.
    */
-  initialContent: PartialBlock<BSchema>[];
+  initialContent: PartialBlock<BSchema, any>[];
   /**
    * Use default BlockNote font and reset the styles of <p> <li> <h1> elements etc., that are used in BlockNote.
    *
@@ -145,9 +145,9 @@ const blockNoteTipTapOptions = {
   enableCoreExtensions: false,
 };
 
-export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
+export class BlockNoteEditor<PSchema, BSchema extends BlockSchema<any> = DefaultBlockSchema> {
   public readonly _tiptapEditor: TiptapEditor & { contentComponent: any };
-  public blockCache = new WeakMap<Node, Block<BSchema>>();
+  public blockCache = new WeakMap<Node, Block<BSchema, PSchema>>();
   public readonly schema: BSchema;
 
   public get domElement() {
@@ -180,7 +180,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
       ...options,
     };
 
-    const extensions = getBlockNoteExtensions<BSchema>({
+    const extensions = getBlockNoteExtensions<BSchema, PSchema>({
       editor: this,
       uiFactories: newOptions.uiFactories || {},
       slashCommands: newOptions.slashCommands || defaultSlashMenuItems,
@@ -243,8 +243,8 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * Gets a snapshot of all top-level (non-nested) blocks in the editor.
    * @returns A snapshot of all top-level (non-nested) blocks in the editor.
    */
-  public get topLevelBlocks(): Block<BSchema>[] {
-    const blocks: Block<BSchema>[] = [];
+  public get topLevelBlocks(): Block<BSchema, PSchema>[] {
+    const blocks: Block<BSchema, PSchema>[] = [];
 
     this._tiptapEditor.state.doc.firstChild!.descendants((node) => {
       blocks.push(nodeToBlock(node, this.schema, this.blockCache));
@@ -334,7 +334,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * Gets a snapshot of the current text cursor position.
    * @returns A snapshot of the current text cursor position.
    */
-  public getTextCursorPosition(): TextCursorPosition<BSchema> {
+  public getTextCursorPosition(): TextCursorPosition<BSchema, PSchema> {
     const { node, depth, startPos, endPos } = getBlockInfoFromPos(
       this._tiptapEditor.state.doc,
       this._tiptapEditor.state.selection.from
@@ -404,7 +404,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
   /**
    * Gets a snapshot of the current selection.
    */
-  public getSelection(): Selection<BSchema> | undefined {
+  public getSelection(): Selection<BSchema, PSchema> | undefined {
     if (
       this._tiptapEditor.state.selection.from ===
       this._tiptapEditor.state.selection.to
@@ -412,7 +412,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
       return undefined;
     }
 
-    const blocks: Block<BSchema>[] = [];
+    const blocks: Block<BSchema, PSchema>[] = [];
 
     this._tiptapEditor.state.doc.descendants((node, pos) => {
       if (node.type.spec.group !== "blockContent") {
@@ -683,7 +683,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * @param blocks An array of blocks that should be serialized into HTML.
    * @returns The blocks, serialized as an HTML string.
    */
-  public async blocksToHTML(blocks: Block<BSchema>[]): Promise<string> {
+  public async blocksToHTML(blocks: Block<BSchema, PSchema>[]): Promise<string> {
     return blocksToHTML(blocks, this._tiptapEditor.schema);
   }
 
@@ -694,7 +694,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * @param html The HTML string to parse blocks from.
    * @returns The blocks parsed from the HTML string.
    */
-  public async HTMLToBlocks(html: string): Promise<Block<BSchema>[]> {
+  public async HTMLToBlocks(html: string): Promise<Block<BSchema, PSchema>[]> {
     return HTMLToBlocks(html, this.schema, this._tiptapEditor.schema);
   }
 
@@ -704,7 +704,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * @param blocks An array of blocks that should be serialized into Markdown.
    * @returns The blocks, serialized as a Markdown string.
    */
-  public async blocksToMarkdown(blocks: Block<BSchema>[]): Promise<string> {
+  public async blocksToMarkdown(blocks: Block<BSchema, PSchema>[]): Promise<string> {
     return blocksToMarkdown(blocks, this._tiptapEditor.schema);
   }
 
@@ -715,7 +715,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = DefaultBlockSchema> {
    * @param markdown The Markdown string to parse blocks from.
    * @returns The blocks parsed from the Markdown string.
    */
-  public async markdownToBlocks(markdown: string): Promise<Block<BSchema>[]> {
+  public async markdownToBlocks(markdown: string): Promise<Block<BSchema, PSchema>[]> {
     return markdownToBlocks(markdown, this.schema, this._tiptapEditor.schema);
   }
 

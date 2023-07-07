@@ -5,7 +5,6 @@ import {
   BlockConfig,
   BlockSchema,
   BlockSpec,
-  PropSchema,
   TipTapNode,
   TipTapNodeConfig,
 } from "./blockTypes";
@@ -18,9 +17,9 @@ export function camelToDataKebab(str: string): string {
 // node's `addAttributes` property.
 export function propsToAttributes<
   BType extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 >(
   blockConfig: Omit<
     BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>,
@@ -56,9 +55,9 @@ export function propsToAttributes<
 // from the clipboard.
 export function parse<
   BType extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 >(
   blockConfig: Omit<
     BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>,
@@ -77,9 +76,9 @@ export function parse<
 // this is only used for serializing content to the clipboard.
 export function render<
   BType extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 >(
   blockConfig: Omit<
     BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>,
@@ -120,9 +119,9 @@ export function render<
 // we want to hide the tiptap node from API consumers and provide a simpler API surface instead
 export function createBlockSpec<
   BType extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 >(
   blockConfig: BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>
 ): BlockSpec<BType, PSchema> {
@@ -163,7 +162,7 @@ export function createBlockSpec<
         }
 
         // Gets BlockNote editor instance
-        const editor = this.options.editor! as BlockNoteEditor<
+        const editor = this.options.editor! as BlockNoteEditor<PSchema, 
           { [k in BType]: BlockSpec<BType, PSchema> }
         >;
         // Gets position of the node
@@ -213,6 +212,7 @@ export function createBlockSpec<
 
   return {
     node: node,
+    props: blockConfig.props,
     propSchema: blockConfig.propSchema,
   };
 }

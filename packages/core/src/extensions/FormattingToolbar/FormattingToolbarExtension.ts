@@ -4,18 +4,19 @@ import { BlockNoteEditor, BlockSchema } from "../..";
 import { FormattingToolbarFactory } from "./FormattingToolbarFactoryTypes";
 import { createFormattingToolbarPlugin } from "./FormattingToolbarPlugin";
 
-export type FormattingToolbarOptions<BSchema extends BlockSchema> = {
-  formattingToolbarFactory: FormattingToolbarFactory<BSchema>;
-  editor: BlockNoteEditor<BSchema>;
+export type FormattingToolbarOptions<BSchema extends BlockSchema<PSchema>, PSchema> = {
+  formattingToolbarFactory: FormattingToolbarFactory<BSchema, PSchema>;
+  editor: BlockNoteEditor<PSchema, BSchema>;
 };
 
 /**
  * The menu that is displayed when selecting a piece of text.
  */
 export const createFormattingToolbarExtension = <
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>,
+  PSchema
 >() =>
-  Extension.create<FormattingToolbarOptions<BSchema>>({
+  Extension.create<FormattingToolbarOptions<BSchema, PSchema>>({
     name: "FormattingToolbarExtension",
 
   addProseMirrorPlugins() {

@@ -6,7 +6,6 @@ import {
   camelToDataKebab,
   createTipTapBlock,
   parse,
-  PropSchema,
   propsToAttributes,
   render,
 } from "@blocknote/core";
@@ -21,9 +20,9 @@ import { ElementType, FC, HTMLProps } from "react";
 // extend BlockConfig but use a react render function
 export type ReactBlockConfig<
   Type extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 > = Omit<
   BlockConfig<Type, PSchema, ContainsInlineContent, BSchema>,
   "render"
@@ -53,9 +52,9 @@ export const InlineContent = <Tag extends ElementType>(
 // we want to hide the tiptap node from API consumers and provide a simpler API surface instead
 export function createReactBlockSpec<
   BType extends string,
-  PSchema extends PropSchema,
+  PSchema,
   ContainsInlineContent extends boolean,
-  BSchema extends BlockSchema
+  BSchema extends BlockSchema<PSchema>
 >(
   blockConfig: ReactBlockConfig<BType, PSchema, ContainsInlineContent, BSchema>
 ): BlockSpec<BType, PSchema> {
@@ -129,6 +128,7 @@ export function createReactBlockSpec<
 
   return {
     node: node,
+    props: blockConfig.props,
     propSchema: blockConfig.propSchema,
   };
 }

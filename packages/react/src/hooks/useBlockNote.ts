@@ -15,7 +15,7 @@ import { createReactSlashMenuFactory } from "../SlashMenu/SlashMenuFactory";
 
 //based on https://github.com/ueberdosis/tiptap/blob/main/packages/react/src/useEditor.ts
 
-type CustomElements<BSchema extends BlockSchema> = Partial<{
+type CustomElements<BSchema extends BlockSchema<PSchema>, PSchema> = Partial<{
   formattingToolbar: FC<{ editor: BlockNoteEditor<BSchema> }>;
   dragHandleMenu: FC<DragHandleMenuProps<BSchema>>;
 }>;
@@ -29,10 +29,10 @@ function useForceUpdate() {
 /**
  * Main hook for importing a BlockNote editor into a React project
  */
-export const useBlockNote = <BSchema extends BlockSchema = DefaultBlockSchema>(
+export const useBlockNote = <PSchema, BSchema extends BlockSchema<PSchema> = DefaultBlockSchema>(
   options: Partial<
     BlockNoteEditorOptions<BSchema> & {
-      customElements: CustomElements<BSchema>;
+      customElements: CustomElements<BSchema, PSchema>;
     }
   > = {},
   deps: DependencyList = []

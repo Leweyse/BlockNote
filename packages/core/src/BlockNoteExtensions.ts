@@ -41,19 +41,19 @@ import { TrailingNode } from "./extensions/TrailingNode/TrailingNodeExtension";
 import UniqueID from "./extensions/UniqueID/UniqueID";
 import { SuggestionsMenuFactory } from "./shared/plugins/suggestion/SuggestionsMenuFactoryTypes";
 
-export type UiFactories<BSchema extends BlockSchema> = Partial<{
-  formattingToolbarFactory: FormattingToolbarFactory<BSchema>;
+export type UiFactories<BSchema extends BlockSchema<PSchema>, PSchema> = Partial<{
+  formattingToolbarFactory: FormattingToolbarFactory<BSchema, PSchema>;
   hyperlinkToolbarFactory: HyperlinkToolbarFactory;
   slashMenuFactory: SuggestionsMenuFactory<BaseSlashMenuItem<BSchema>>;
-  blockSideMenuFactory: BlockSideMenuFactory<BSchema>;
+  blockSideMenuFactory: BlockSideMenuFactory<BSchema, PSchema>;
 }>;
 
 /**
  * Get all the Tiptap extensions BlockNote is configured with by default
  */
-export const getBlockNoteExtensions = <BSchema extends BlockSchema>(opts: {
+export const getBlockNoteExtensions = <BSchema extends BlockSchema<PSchema>, PSchema>(opts: {
   editor: BlockNoteEditor<BSchema>;
-  uiFactories: UiFactories<BSchema>;
+  uiFactories: UiFactories<BSchema, PSchema>;
   slashCommands: BaseSlashMenuItem<any>[]; // couldn't fix type, see https://github.com/TypeCellOS/BlockNote/pull/191#discussion_r1210708771
   blockSchema: BSchema;
   collaboration?: {
@@ -157,7 +157,7 @@ export const getBlockNoteExtensions = <BSchema extends BlockSchema>(opts: {
 
   if (opts.uiFactories.blockSideMenuFactory) {
     ret.push(
-      createDraggableBlocksExtension<BSchema>().configure({
+      createDraggableBlocksExtension<BSchema, PSchema>().configure({
         editor: opts.editor,
         blockSideMenuFactory: opts.uiFactories.blockSideMenuFactory,
       })
@@ -166,7 +166,7 @@ export const getBlockNoteExtensions = <BSchema extends BlockSchema>(opts: {
 
   if (opts.uiFactories.formattingToolbarFactory) {
     ret.push(
-      createFormattingToolbarExtension<BSchema>().configure({
+      createFormattingToolbarExtension<BSchema, PSchema>().configure({
         editor: opts.editor,
         formattingToolbarFactory: opts.uiFactories.formattingToolbarFactory,
       })
@@ -185,7 +185,7 @@ export const getBlockNoteExtensions = <BSchema extends BlockSchema>(opts: {
 
   if (opts.uiFactories.slashMenuFactory) {
     ret.push(
-      createSlashMenuExtension<BSchema>().configure({
+      createSlashMenuExtension<BSchema, PSchema>().configure({
         editor: opts.editor,
         commands: opts.slashCommands,
         slashMenuFactory: opts.uiFactories.slashMenuFactory,

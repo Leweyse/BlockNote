@@ -4,14 +4,14 @@ import { SlashMenuItem } from "./SlashMenuItem";
 import { ReactSlashMenuItem } from "../ReactSlashMenuItem";
 import { BlockSchema } from "@blocknote/core";
 
-export type SlashMenuProps<BSchema extends BlockSchema> = {
+export type SlashMenuProps<BSchema extends BlockSchema<PSchema>, PSchema> = {
   items: ReactSlashMenuItem<BSchema>[];
   keyboardHoveredItemIndex: number;
   itemCallback: (item: ReactSlashMenuItem<BSchema>) => void;
 };
 
-export function SlashMenu<BSchema extends BlockSchema>(
-  props: SlashMenuProps<BSchema>
+export function SlashMenu<BSchema extends BlockSchema<PSchema>, PSchema>(
+  props: SlashMenuProps<BSchema, PSchema>
 ) {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: "SlashMenu",

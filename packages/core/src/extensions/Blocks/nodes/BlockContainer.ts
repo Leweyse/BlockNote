@@ -24,11 +24,11 @@ declare module "@tiptap/core" {
       BNDeleteBlock: (posInBlock: number) => ReturnType;
       BNMergeBlocks: (posBetweenBlocks: number) => ReturnType;
       BNSplitBlock: (posInBlock: number, keepType: boolean) => ReturnType;
-      BNUpdateBlock: <BSchema extends BlockSchema>(
+      BNUpdateBlock: <BSchema extends BlockSchema<PSchema>, PSchema>(
         posInBlock: number,
         block: PartialBlock<BSchema>
       ) => ReturnType;
-      BNCreateOrUpdateBlock: <BSchema extends BlockSchema>(
+      BNCreateOrUpdateBlock: <BSchema extends BlockSchema<PSchema>, PSchema>(
         posInBlock: number,
         block: PartialBlock<BSchema>
       ) => ReturnType;
